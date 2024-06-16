@@ -1,28 +1,28 @@
-import plotly.express as px
+import plotly.graph_objects as go
 from shiny import App, render, ui
 from shinywidgets import output_widget, render_widget
 
 data = dict(
-    character=["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
-    parent=["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
-    value=[14, 14, 12, 10, 2, 6, 6, 4, 4])
+    labels=["TOP", "CUTOP", "DUTOP", "RAM", "data_fsm", "CKTOP", "REGTOP", "regs", "I2C"],
+    parents=["", "TOP", "TOP", "DUTOP", "DUTOP", "TOP", "TOP", "REGTOP", "TOP" ],
+    values=[0, 14, 2, 10, 2, 6, 2, 4, 2])
 
 app_ui = ui.page_fluid(
-    ui.panel_title("Interactive Documentation"),
-    ui.input_slider("n", "N", 0, 100, 20),
-    ui.output_text_verbatim("txt"),
-
-    ui.navset_tab(
+    ui.page_navbar(
         ui.nav_panel(
             "Ordinateur",
+            ui.layout_sidebar(
+                ui.sidebar(open="always"),
+                ui.input_switch("enhance", "Enhance", False),
+            ),
             ui.div(
                 {"style": "font-size:100px; font-weight:bold; padding: 180px 0; text-align:center;"},
-                "Ordinateur"
+                ui.output_text("ordinateur_txt"),
             ),
         ),
         ui.nav_panel(
             "Plot",
-            output_widget("plot", width=1000, height=600)
+            output_widget("plot", width=800, height=800)
         ),
         ui.nav_panel(
             "Commandments",
@@ -37,24 +37,27 @@ app_ui = ui.page_fluid(
             """),
         ),
         id="tab",
-    )
+        title="Interactive Documentation",
+    ),
 )
 
 
 def server(input, output, session):
     @render.text
-    def txt():
-        return f"n*2 is {input.n() * 2}"
+    def ordinateur_txt():
+        return "Computer" if input.enhance() else "Ordinateur"
 
     @render_widget
     def plot():
-        sunburst = px.sunburst(
-                data,
-                names='character',
-                parents='parent',
-                values='value',
-                branchvalues="remainder"
-                )
-        return sunburst
+        fig = go.Figure(go.Sunburst(**data))
+        fig.update_layout(
+                width=800,
+                height=800,
+                font=dict(
+                    family="Courier New, monospace",
+                    size=24
+                    )
+        )
+        return fig
 
 app = App(app_ui, server)
