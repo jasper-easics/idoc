@@ -22,7 +22,17 @@ app_ui = ui.page_fluid(
         ),
         ui.nav_panel(
             "Plot",
-            output_widget("plot", width=800, height=800)
+            ui.row(
+                output_widget("plot"),
+                align="center"
+            )
+        ),
+        ui.nav_panel(
+            "Frameworks",
+            ui.row(
+                ui.output_image("frameworks_img"),
+                align="center"
+            )
         ),
         ui.nav_panel(
             "Commandments",
@@ -59,5 +69,14 @@ def server(input, output, session):
                     )
         )
         return fig
+
+    @render.image
+    def frameworks_img():
+        from pathlib import Path
+
+        img_dir = Path(__file__).resolve().parent / "img"
+        img: ImgData = {"src": str(img_dir / "github_star_history.png"), "width": "1200px"}
+        return img
+
 
 app = App(app_ui, server)
