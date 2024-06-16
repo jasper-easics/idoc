@@ -23,7 +23,6 @@ mdit-py-plugins==0.4.1
 mdurl==0.1.2
 numpy==1.26.4
 packaging==24.1
-pandas==2.2.2
 parso==0.8.4
 pexpect==4.9.0
 platformdirs==4.2.2
